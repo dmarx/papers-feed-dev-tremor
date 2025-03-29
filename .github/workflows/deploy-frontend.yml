@@ -49,16 +49,11 @@ jobs:
 
       - name: Prepare deployment
         run: |
-          # Ensure bundle.css exists, create an empty one if not
-          if [ ! -f "public/bundle.css" ]; then
-            touch public/bundle.css
-          fi
-
           
           # Copy papers.json to the public folder if it exists
           #cp data/papers/papers.json frontend-new/public/papers.json
 
-          ls -lha public/
+          ls -lha ./out
 
           
       # Configure GitHub Pages
@@ -68,7 +63,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./public
+          path: ./out
       
       - name: Deploy to GitHub Pages
         id: deployment
