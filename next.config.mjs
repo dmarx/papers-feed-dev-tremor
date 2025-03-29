@@ -1,25 +1,13 @@
 /** @type {import('next').NextConfig} */
-
 const nextConfig = {
-  redirects: async () => {
-    return [
-      {
-        source: "/",
-        destination: "/reports",
-        permanent: true,
-      },
-    ]
+  output: 'export',
+  distDir: 'out',
+  images: { 
+    unoptimized: true 
   },
-  images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-        port: "",
-        pathname: "/**",
-      },
-    ],
-  },
-}
+  basePath: '/${{ github.event.repository.name }}',
+  assetPrefix: '/${{ github.event.repository.name }}/',
+  trailingSlash: true,
+};
 
-export default nextConfig
+module.exports = nextConfig;
