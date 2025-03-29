@@ -1,0 +1,75 @@
+# .github/workflows/deploy-frontend.yml
+name: Build and Deploy New Frontend
+on:
+  push:
+    branches: [ main ]
+  
+  # Allow manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  actions: read
+
+jobs:
+  build-and-deploy-frontend:
+    runs-on: ubuntu-latest
+        
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Regenerate package-lock.json
+        run: |
+          if [ -f "package-lock.json" ]; then
+            rm -f package-lock.json
+          fi
+          npm install --package-lock-only --no-audit
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          #cache: 'npm'
+          #cache-dependency-path: 'frontend-new/package-lock.json'
+        
+      - name: Install dependencies
+        run: |
+          npm install --prefer-offline
+      
+      - name: Run Tests
+        run: |
+          npm test
+      
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Prepare deployment
+        run: |
+          # Ensure bundle.css exists, create an empty one if not
+          if [ ! -f "public/bundle.css" ]; then
+            touch public/bundle.css
+          fi
+
+          
+          # Copy papers.json to the public folder if it exists
+          #cp data/papers/papers.json frontend-new/public/papers.json
+
+          ls -lha public/
+
+          
+      # Configure GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
